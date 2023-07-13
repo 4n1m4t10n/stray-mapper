@@ -2,7 +2,9 @@
 #include <vector>
 #include <queue>
 #include <climits>
-#include <stack>
+#include <unordered_map>
+#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
@@ -20,8 +22,8 @@ struct Vertex {
     }
 };
 
-// Dijkstra's algorithm to find the shortest path from the start vertex to the given vertices
-void shortestPath(const vector<vector<int>>& graph, int start, const vector<int>& targetVertices) {
+// Dijkstra's algorithm to find the shortest path that visits the target vertices
+vector<int> shortestPath(const vector<vector<int>>& graph, int start, const vector<int>& targetVertices) {
     int numVertices = graph.size();
 
     // Create a distance array to store the shortest distances from the start vertex
@@ -30,6 +32,25 @@ void shortestPath(const vector<vector<int>>& graph, int start, const vector<int>
     // Create a previous array to store the previous vertex for each vertex in the path
     vector<int> previous(numVertices, -1);
 
+    // Create a map to store the vertex names
+    unordered_map<int, string> vertexNames;
+    vertexNames[0] = "start";
+    vertexNames[1] = "B15";
+    vertexNames[2] = "B16";
+    vertexNames[3] = "B17";
+    vertexNames[4] = "B18";
+    vertexNames[5] = "B19";
+    vertexNames[6] = "B20";
+    vertexNames[7] = "A29";
+    vertexNames[8] = "A30";
+    vertexNames[9] = "A31";
+    vertexNames[10] = "A32";
+    vertexNames[11] = "A33";
+    vertexNames[12] = "A34";
+
+    // Create a set to store the visited vertices
+    unordered_set<int> visited;
+
     // Create a priority queue to store vertices based on their distances
     priority_queue<Vertex> pq;
 
@@ -37,30 +58,13 @@ void shortestPath(const vector<vector<int>>& graph, int start, const vector<int>
     distance[start] = 0;
     pq.push(Vertex(start, 0, -1));
 
-    // Iterate until the priority queue becomes empty
+    // Iterate until all target vertices are visited or the priority queue becomes empty
     while (!pq.empty()) {
         Vertex current = pq.top();
         pq.pop();
 
-        // Stop if the current vertex is one of the target vertices
-        if (find(targetVertices.begin(), targetVertices.end(), current.index) != targetVertices.end()) {
-            // Reconstruct the shortest path and store it in a stack
-            stack<int> shortestPath;
-            int vertex = current.index;
-            while (vertex != start) {
-                shortestPath.push(vertex);
-                vertex = previous[vertex];
-            }
-            shortestPath.push(start);
-
-            // Print the shortest path in the correct order
-            cout << "Shortest path to vertex " << current.index << ": ";
-            while (!shortestPath.empty()) {
-                cout << shortestPath.top() << " ";
-                shortestPath.pop();
-            }
-            cout << endl;
-        }
+        // Mark the current vertex as visited
+        visited.insert(current.index);
 
         // Explore the adjacent vertices of the current vertex
         for (int i = 0; i < numVertices; i++) {
@@ -77,30 +81,63 @@ void shortestPath(const vector<vector<int>>& graph, int start, const vector<int>
             }
         }
     }
+
+    // Check if all target vertices are visited
+    for (int vertex : targetVertices) {
+        if (visited.find(vertex) == visited.end()) {
+            // If any target vertex is not visited, return an empty path
+            return vector<int>();
+        }
+    }
+
+    // Reconstruct the shortest path
+    vector<int> shortestPath;
+    int vertex = targetVertices[0];
+    while (vertex != start) {
+        shortestPath.push_back(vertex);
+        vertex = previous[vertex];
+    }
+    shortestPath.push_back(start);
+
+    // Reverse the path to obtain the correct order
+    reverse(shortestPath.begin(), shortestPath.end());
+
+    return shortestPath;
 }
 
 int main() {
     vector<vector<int>> graph = {
-        {0, 11, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0},
-        {11, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
-        {0, 2, 0, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0},
-        {0, 0, 1, 0, 2, 0, 0, 0, 1, 2, 0, 0, 0},
-        {0, 0, 0, 2, 0, 1, 0, 0, 0, 2, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 2, 2, 0},
-        {0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 2, 0},
-        {10, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0},
-        {0, 0, 2, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0},
-        {0, 0, 0, 2, 1, 0, 0, 0, 1, 0, 2, 0, 0},
-        {0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1, 0},
-        {0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 0, 2},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0}
+        {0, 11, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0}, // start
+        {11, 0, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0}, // B15
+        {0, 2, 0, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0}, // B16
+        {0, 0, 1, 0, 2, 0, 0, 0, 0, 2, 2, 0, 0}, // B17
+        {0, 0, 0, 2, 0, 1, 0, 0, 0, 2, 2, 0, 0}, // B18
+        {0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 2, 2}, // B19
+        {0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 2}, // B20
+        {10, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0}, // A29
+        {0, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0}, // A30
+        {0, 0, 0, 2, 2, 0, 0, 0, 1, 0, 2, 0, 0}, // A31 
+        {0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 1, 0}, // A32
+        {0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 0, 2}, // A33
+        {0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0} // A34
     };
 
-    vector<int> targetVertices = {1, 5, 9, 12};  // Example target vertices
+    vector<int> targetVertices = {1, 5, 12}; // Example target vertices
+    vector<string> vertexNames = {"start", "B15", "B16", "B17", "B18", "B19", "B20", "A29", "A30", "A31", "A32", "A33", "A34"};
 
-    int startVertex = 0;  // Index of the "start" vertex
+    int startVertex = 0; // Index of the "start" vertex
 
-    shortestPath(graph, startVertex, targetVertices);
+    vector<int> path = shortestPath(graph, startVertex, targetVertices);
+
+    if (!path.empty()) {
+        cout << "Shortest path to target vertices: ";
+        for (int vertexIndex : path) {
+            cout << vertexNames[vertexIndex] << " ";
+        }
+        cout << endl;
+    } else {
+        cout << "No path found to visit all target vertices." << endl;
+    }
 
     return 0;
 }
