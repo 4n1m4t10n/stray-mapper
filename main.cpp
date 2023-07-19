@@ -8,105 +8,86 @@
 
 using namespace std;
 
-// Structure to represent a vertex and its distance from the start
-struct Vertex {
-    int index;
-    int distance;
-    int previous;
-
-    Vertex(int idx, int dist, int prev) : index(idx), distance(dist), previous(prev) {}
-
-    // Overload the comparison operator for the priority queue
-    bool operator<(const Vertex& other) const {
-        return distance > other.distance; // Compare distances (min-heap)
+// Number of vertices in the graph
+#define V 13
+ 
+// A utility function to find the vertex with minimum
+// distance value, from the set of vertices not yet included
+// in shortest path tree
+int minDistance(int dist[], bool sptSet[])
+{
+ 
+    // Initialize min value
+    int min = INT_MAX, min_index;
+ 
+    for (int v = 0; v < V; v++)
+        if (sptSet[v] == false && dist[v] <= min)
+            min = dist[v], min_index = v;
+ 
+    return min_index;
+}
+ 
+// A utility function to print the constructed distance
+// array
+void printSolution(int dist[])
+{
+    cout << "Vertex \t Distance from Source" << endl;
+    for (int i = 0; i < V; i++)
+        cout << i << " \t\t\t\t" << dist[i] << endl;
+}
+ 
+// Function that implements Dijkstra's single source
+// shortest path algorithm for a graph represented using
+// adjacency matrix representation
+void dijkstra(int graph[V][V], int src)
+{
+    int dist[V]; // The output array.  dist[i] will hold the
+                 // shortest
+    // distance from src to i
+ 
+    bool sptSet[V]; // sptSet[i] will be true if vertex i is
+                    // included in shortest
+    // path tree or shortest distance from src to i is
+    // finalized
+ 
+    // Initialize all distances as INFINITE and stpSet[] as
+    // false
+    for (int i = 0; i < V; i++)
+        dist[i] = INT_MAX, sptSet[i] = false;
+ 
+    // Distance of source vertex from itself is always 0
+    dist[src] = 0;
+ 
+    // Find shortest path for all vertices
+    for (int count = 0; count < V - 1; count++) {
+        // Pick the minimum distance vertex from the set of
+        // vertices not yet processed. u is always equal to
+        // src in the first iteration.
+        int u = minDistance(dist, sptSet);
+ 
+        // Mark the picked vertex as processed
+        sptSet[u] = true;
+ 
+        // Update dist value of the adjacent vertices of the
+        // picked vertex.
+        for (int v = 0; v < V; v++)
+ 
+            // Update dist[v] only if is not in sptSet,
+            // there is an edge from u to v, and total
+            // weight of path from src to  v through u is
+            // smaller than current value of dist[v]
+            if (!sptSet[v] && graph[u][v]
+                && dist[u] != INT_MAX
+                && dist[u] + graph[u][v] < dist[v])
+                dist[v] = dist[u] + graph[u][v];
     }
-};
-
-// Dijkstra's algorithm to find the shortest path that visits the target vertices
-vector<int> shortestPath(const vector<vector<int>>& graph, int start, const vector<int>& targetVertices) {
-    int numVertices = graph.size();
-
-    // Create a distance array to store the shortest distances from the start vertex
-    vector<int> distance(numVertices, INT_MAX);
-
-    // Create a previous array to store the previous vertex for each vertex in the path
-    vector<int> previous(numVertices, -1);
-
-    // Create a map to store the vertex names
-    unordered_map<int, string> vertexNames;
-    vertexNames[0] = "start";
-    vertexNames[1] = "B15";
-    vertexNames[2] = "B16";
-    vertexNames[3] = "B17";
-    vertexNames[4] = "B18";
-    vertexNames[5] = "B19";
-    vertexNames[6] = "B20";
-    vertexNames[7] = "A29";
-    vertexNames[8] = "A30";
-    vertexNames[9] = "A31";
-    vertexNames[10] = "A32";
-    vertexNames[11] = "A33";
-    vertexNames[12] = "A34";
-
-    // Create a set to store the visited vertices
-    unordered_set<int> visited;
-
-    // Create a priority queue to store vertices based on their distances
-    priority_queue<Vertex> pq;
-
-    // Initialize the distance of the start vertex as 0 and insert it into the priority queue
-    distance[start] = 0;
-    pq.push(Vertex(start, 0, -1));
-
-    // Iterate until all target vertices are visited or the priority queue becomes empty
-    while (!pq.empty()) {
-        Vertex current = pq.top();
-        pq.pop();
-
-        // Mark the current vertex as visited
-        visited.insert(current.index);
-
-        // Explore the adjacent vertices of the current vertex
-        for (int i = 0; i < numVertices; i++) {
-            if (graph[current.index][i] != 0) { // If there is an edge between current and i
-                int newDistance = current.distance + graph[current.index][i];
-
-                // If the new distance is shorter, update the distance array and the previous array,
-                // and insert the vertex into the priority queue
-                if (newDistance < distance[i]) {
-                    distance[i] = newDistance;
-                    previous[i] = current.index;
-                    pq.push(Vertex(i, newDistance, current.index));
-                }
-            }
-        }
-    }
-
-    // Check if all target vertices are visited
-    for (int vertex : targetVertices) {
-        if (visited.find(vertex) == visited.end()) {
-            // If any target vertex is not visited, return an empty path
-            return vector<int>();
-        }
-    }
-
-    // Reconstruct the shortest path
-    vector<int> shortestPath;
-    int vertex = targetVertices[0];
-    while (vertex != start) {
-        shortestPath.push_back(vertex);
-        vertex = previous[vertex];
-    }
-    shortestPath.push_back(start);
-
-    // Reverse the path to obtain the correct order
-    reverse(shortestPath.begin(), shortestPath.end());
-
-    return shortestPath;
+ 
+    // print the constructed distance array
+    printSolution(dist);
 }
 
 int main() {
-    vector<vector<int>> graph = {
+    int graph[V][V] = {
         {0, 11, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0}, // start
         {11, 0, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0}, // B15
         {0, 2, 0, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0}, // B16
@@ -122,22 +103,7 @@ int main() {
         {0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0} // A34
     };
 
-    vector<int> targetVertices = {1, 5, 12}; // Example target vertices
-    vector<string> vertexNames = {"start", "B15", "B16", "B17", "B18", "B19", "B20", "A29", "A30", "A31", "A32", "A33", "A34"};
-
-    int startVertex = 0; // Index of the "start" vertex
-
-    vector<int> path = shortestPath(graph, startVertex, targetVertices);
-
-    if (!path.empty()) {
-        cout << "Shortest path to target vertices: ";
-        for (int vertexIndex : path) {
-            cout << vertexNames[vertexIndex] << " ";
-        }
-        cout << endl;
-    } else {
-        cout << "No path found to visit all target vertices." << endl;
-    }
+    dijkstra(graph, 0);
 
     return 0;
 }
