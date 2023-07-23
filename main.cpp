@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <unordered_set>
+#include <set>
 
 using namespace std;
 
@@ -39,7 +40,7 @@ void printSolution(int dist[])
 // Function that implements Dijkstra's single source
 // shortest path algorithm for a graph represented using
 // adjacency matrix representation
-void dijkstra(int graph[V][V], int src)
+void dijkstra(vector<vector<int>> graph, int src)
 {
     int dist[V]; // The output array.  dist[i] will hold the
                  // shortest
@@ -83,11 +84,15 @@ void dijkstra(int graph[V][V], int src)
     }
  
     // print the constructed distance array
+
+
     printSolution(dist);
+
+
 }
 
 int main() {
-    int graph[V][V] = {
+    vector<vector<int>> graph = {
         {0, 11, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0}, // start
         {11, 0, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0}, // B15
         {0, 2, 0, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0}, // B16
@@ -103,7 +108,12 @@ int main() {
         {0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0} // A34
     };
 
-    dijkstra(graph, 0);
+    set<int> targets = {1, 5, 12};
+    vector<int> path;
+
+    int start = 0;
+
+    dijkstra(graph, 1);
 
     return 0;
 }
