@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <queue>
 #include <climits>
@@ -15,26 +16,26 @@ using namespace std;
 // A utility function to find the vertex with minimum
 // distance value, from the set of vertices not yet included
 // in shortest path tree
-int minDistance(int dist[], bool sptSet[])
+int minDistance(vector<pair<int, int>> dist, bool sptSet[])
 {
  
     // Initialize min value
     int min = INT_MAX, min_index;
  
     for (int v = 0; v < V; v++)
-        if (sptSet[v] == false && dist[v] <= min)
-            min = dist[v], min_index = v;
+        if (sptSet[v] == false && dist[v].second <= min)
+            min = dist[v].second, min_index = v;
  
     return min_index;
 }
  
 // A utility function to print the constructed distance
 // array
-void printSolution(int dist[])
+void printSolution(vector<pair<int, int>> dist)
 {
     cout << "Vertex \t Distance from Source" << endl;
     for (int i = 0; i < V; i++)
-        cout << i << " \t\t\t\t" << dist[i] << endl;
+        cout << i << " \t\t\t\t" << dist[i].second << endl;
 }
  
 // Function that implements Dijkstra's single source
@@ -42,7 +43,7 @@ void printSolution(int dist[])
 // adjacency matrix representation
 void dijkstra(vector<vector<int>> graph, int src)
 {
-    int dist[V]; // The output array.  dist[i] will hold the
+    vector<pair<int, int>> dist; // The output array.  dist[i] will hold the
                  // shortest
     // distance from src to i
  
@@ -54,10 +55,13 @@ void dijkstra(vector<vector<int>> graph, int src)
     // Initialize all distances as INFINITE and stpSet[] as
     // false
     for (int i = 0; i < V; i++)
-        dist[i] = INT_MAX, sptSet[i] = false;
+    {
+        dist.push_back(make_pair(i, INT_MAX)); 
+        sptSet[i] = false;
+    }
  
     // Distance of source vertex from itself is always 0
-    dist[src] = 0;
+    dist[src].second = 0;
  
     // Find shortest path for all vertices
     for (int count = 0; count < V - 1; count++) {
@@ -78,9 +82,9 @@ void dijkstra(vector<vector<int>> graph, int src)
             // weight of path from src to  v through u is
             // smaller than current value of dist[v]
             if (!sptSet[v] && graph[u][v]
-                && dist[u] != INT_MAX
-                && dist[u] + graph[u][v] < dist[v])
-                dist[v] = dist[u] + graph[u][v];
+                && dist[u].second != INT_MAX
+                && dist[u].second + graph[u][v] < dist[v].second)
+                dist[v].second = dist[u].second + graph[u][v];
     }
  
     // print the constructed distance array
