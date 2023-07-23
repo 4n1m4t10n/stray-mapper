@@ -35,13 +35,13 @@ void printSolution(vector<pair<int, int>> dist)
 {
     cout << "Vertex \t Distance from Source" << endl;
     for (int i = 0; i < V; i++)
-        cout << i << " \t\t\t\t" << dist[i].second << endl;
+        cout << dist[i].first << " \t\t\t\t" << dist[i].second << endl;
 }
  
 // Function that implements Dijkstra's single source
 // shortest path algorithm for a graph represented using
 // adjacency matrix representation
-void dijkstra(vector<vector<int>> graph, int src)
+void dijkstra(vector<vector<int>> graph, int src, set<int> targets)
 {
     vector<pair<int, int>> dist; // The output array.  dist[i] will hold the
                  // shortest
@@ -87,9 +87,10 @@ void dijkstra(vector<vector<int>> graph, int src)
                 dist[v].second = dist[u].second + graph[u][v];
     }
  
+    std::sort(dist.begin(), dist.end(), [](auto &left, auto &right) {
+    return left.second < right.second;
+});
     // print the constructed distance array
-
-
     printSolution(dist);
 
 
@@ -117,7 +118,7 @@ int main() {
 
     int start = 0;
 
-    dijkstra(graph, 1);
+    dijkstra(graph, start, targets);
 
     return 0;
 }
