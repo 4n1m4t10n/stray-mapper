@@ -3,18 +3,29 @@
 #include <algorithm>
 using namespace std;
 
-int main() {
-    vector<int> nums = {0, 1, 2, 2, 3, 0, 4, 2};
-    int val = 2;
-    for (int i = 0; i < nums.size(); i++)
-        {
-            if (nums[i] == val)
-            {
-                nums.erase(nums.begin() + i);
-                i--;
-            }
-        }
+void Jump(vector<int>& nums, int pos, bool& goal) {
+        int range = nums[pos];
 
-        return nums.size();
+        if ((range + pos) >= (nums.size() - 1)){
+            goal = true;
+            return;
+        }
+        
+        while (range != 0){
+            Jump(nums, pos + range, goal);
+
+            if (goal)
+                return;
+            else
+                range--;
+        }
+        
+    }
+
+int main() {
+    vector<int> nums = {2, 3, 1, 1, 4};
+    bool goal = false;
+        Jump(nums, 0, goal);
+        return goal;
     
 }
