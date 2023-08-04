@@ -1,31 +1,26 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <algorithm>
 using namespace std;
 
-void Jump(vector<int>& nums, int pos, bool& goal) {
-        int range = nums[pos];
+bool isPalindrome(int x) {
+        string t = to_string(x);
+        int length = t.length();
+        bool isP = true;
 
-        if ((range + pos) >= (nums.size() - 1)){
-            goal = true;
-            return;
+        for (int i = 0; i < length/2; i++)
+        {
+            cout << length/2;
+            cout << t.at(i)  << " " << t.at(length - 1 - i);
+            if (t.at(i) != t.at(length - 1 - i))
+                isP = false;
         }
-        
-        while (range != 0){
-            Jump(nums, pos + range, goal);
 
-            if (goal)
-                return;
-            else
-                range--;
-        }
-        
+        return isP;
     }
 
 int main() {
-    vector<int> nums = {2, 3, 1, 1, 4};
-    bool goal = false;
-        Jump(nums, 0, goal);
-        return goal;
-    
+    int x = 121;
+    isPalindrome(x);
 }
