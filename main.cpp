@@ -41,7 +41,7 @@ void printSolution(vector<pair<int, int>> dist)
 // Function that implements Dijkstra's single source
 // shortest path algorithm for a graph represented using
 // adjacency matrix representation
-void dijkstra(vector<vector<int>> graph, int src, set<int> targets)
+void dijkstra(vector<vector<int>> graph, int &src, set<int> targets, vector<int> &path)
 {
     vector<pair<int, int>> dist; // The output array.  dist[i] will hold the
                  // shortest
@@ -93,6 +93,14 @@ void dijkstra(vector<vector<int>> graph, int src, set<int> targets)
     // print the constructed distance array
     printSolution(dist);
 
+    for (int i = 1; i < dist.size(); i++){
+        if (targets.find(dist[i].first) != targets.end()){
+            src = dist[i].first;
+            path.push_back(src);
+            targets.erase(targets.find(dist[i].first));
+            break;
+        }
+    }
 
 }
 
@@ -118,7 +126,8 @@ int main() {
 
     int start = 0;
 
-    dijkstra(graph, start, targets);
+    while (!targets.empty())
+        dijkstra(graph, start, targets, path);
 
     return 0;
 }
