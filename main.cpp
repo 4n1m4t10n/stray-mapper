@@ -37,11 +37,23 @@ void printSolution(vector<pair<int, int>> dist)
     for (int i = 0; i < V; i++)
         cout << dist[i].first << " \t\t\t\t" << dist[i].second << endl;
 }
+
+template <typename S>
+ostream& operator<<(ostream& os,
+                    const vector<S>& vector)
+{
+    // Printing all the elements
+    // using <<
+    for (auto element : vector) {
+        os << element << " ";
+    }
+    return os;
+}
  
 // Function that implements Dijkstra's single source
 // shortest path algorithm for a graph represented using
 // adjacency matrix representation
-void dijkstra(vector<vector<int>> graph, int &src, set<int> targets, vector<int> &path)
+void dijkstra(vector<vector<int>> graph, int &src, set<int>& targets, vector<int> &path)
 {
     vector<pair<int, int>> dist; // The output array.  dist[i] will hold the
                  // shortest
@@ -90,8 +102,6 @@ void dijkstra(vector<vector<int>> graph, int &src, set<int> targets, vector<int>
     std::sort(dist.begin(), dist.end(), [](auto &left, auto &right) {
     return left.second < right.second;
 });
-    // print the constructed distance array
-    printSolution(dist);
 
     for (int i = 1; i < dist.size(); i++){
         if (targets.find(dist[i].first) != targets.end()){
@@ -103,6 +113,17 @@ void dijkstra(vector<vector<int>> graph, int &src, set<int> targets, vector<int>
     }
 
 }
+
+int isAisle (string input){
+    int value;
+    if (input == "B15")
+        value = 1;
+    else if (input == "B16")
+        value = 2;
+    else if (input == "B17")
+        value = 3;
+    }
+ // http://graphonline.ru/en/?graph=EEpHRWLwFipRpcjzZZcst
 
 int main() {
     vector<vector<int>> graph = {
@@ -121,13 +142,24 @@ int main() {
         {0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0} // A34
     };
 
-    set<int> targets = {1, 5, 12};
+    cout << "Enter target aisles, or type 'GO' to create the path." << endl;
+    string input = "";
+
+    while (input != "GO"){
+
+    }
+
+    set<int> targets = {1, 6, 9, 11, 4, 5, 12};
     vector<int> path;
 
     int start = 0;
 
     while (!targets.empty())
         dijkstra(graph, start, targets, path);
+
+    cout << "Here is the order in which you visit each aisle: " << endl;
+    cout << path << endl;
+
 
     return 0;
 }
